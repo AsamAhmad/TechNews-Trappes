@@ -1,0 +1,7 @@
+index:
+    path: /
+    controller: App\Controller\TechNews\FrontController::index
+
+contact:
+    path: /contact
+    controller: App\Controller\TechNews\FrontController::contact
