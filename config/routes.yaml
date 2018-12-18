@@ -3,5 +3,5 @@ index:
     controller: App\Controller\TechNews\FrontController::index
 
 contact:
-    path: /contact
+    path: /contact.html
     controller: App\Controller\TechNews\FrontController::contact

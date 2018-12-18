@@ -3,10 +3,11 @@
 namespace App\Controller\TechNews;
 
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class FrontController
+class FrontController extends AbstractController
 {
     /**
      * Page d'Accueil
@@ -14,7 +15,8 @@ class FrontController
      */
     public function index()
     {
-        return new Response("<html><body><h1>PAGE D'ACCUEIL</h1></body></html>");
+        # return new Response("<html><body><h1>PAGE D'ACCUEIL</h1></body></html>");
+        return $this->render('front/index.html.twig');
     }
 
     /**
@@ -36,7 +38,8 @@ class FrontController
      */
     public function categorie($slug)
     {
-        return new Response("<html><body><h1>PAGE CATEGORIE : $slug</h1></body></html>");
+        # return new Response("<html><body><h1>PAGE CATEGORIE : $slug</h1></body></html>");
+        return $this->render('front/categorie.html.twig');
     }
 
     /**
@@ -51,7 +54,8 @@ class FrontController
     {
         # Exemple d'URL
         # /politique/vinci-autoroutes-va-envoyer-une-facture-aux-automobilistes_9841.html
-        return new Response("<html><body><h1>PAGE ARTICLE : $id</h1></body></html>");
+        # return new Response("<html><body><h1>PAGE ARTICLE : $id</h1></body></html>");
+        return $this->render('front/article.html.twig');
     }
 
 }
