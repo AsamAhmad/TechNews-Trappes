@@ -5,21 +5,13 @@
             <li>
                 <a href="{{ path('index') }}">Accueil </a>
             </li>
-            <li>
-                <a href="{{ path('front_categorie', {
-                    'slug' : 'politique'
-                }) }}">Politique</a>
-            </li>
-            <li>
-                <a href="{{ path('front_categorie', {
-                    'slug' : 'economie'
-                }) }}">Economie</a>
-            </li>
-            <li>
-                <a href="{{ path('front_categorie', {
-                    'slug' : 'sports'
-                }) }}">Sports </a>
-            </li>
+            {% for categorie in categories %}
+                <li>
+                    <a href="{{ path('front_categorie', {
+                        'slug' : categorie.slug
+                    }) }}">{{ categorie.nom }}</a>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 </nav>
@@ -30,7 +22,7 @@
             <div class="row">
                 <div class="col-md-3 col-sm-4 col-xs-12">
                     <a href="{{ path('index') }}" class="logo">
-                        <img alt="Logo" src="{{ asset('images/logo.png') }}" />
+                        <img alt="Logo" src="{{ asset('images/logo.png') }}"/>
                     </a>
                 </div>
             </div>
@@ -45,28 +37,20 @@
                 <li>
                     <a href="{{ path('index') }}">Accueil </a>
                 </li>
-                <li>
-                    <a href="{{ path('front_categorie', {
-                        'slug' : 'politique'
-                    }) }}">Politique</a>
-                </li>
-                <li>
-                    <a href="{{ path('front_categorie', {
-                        'slug' : 'economie'
-                    }) }}">Economie</a>
-                </li>
-                <li>
-                    <a href="{{ path('front_categorie', {
-                        'slug' : 'sports'
-                    }) }}">Sports </a>
-                </li>
+                {% for categorie in categories %}
+                    <li>
+                        <a href="{{ path('front_categorie', {
+                            'slug' : categorie.slug
+                        }) }}">{{ categorie.nom }}</a>
+                    </li>
+                {% endfor %}
             </ul>
             <div class="search-icon">
                 <div class="search-icon-inner">
                     <i class="fa fa-search"></i>
                 </div>
                 <div class="search-box">
-                    <input type="text" placeholder="Rechercher..." />
+                    <input type="text" placeholder="Rechercher..."/>
                     <button>Lancer</button>
                 </div>
             </div>

@@ -14,37 +14,81 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
+
+    const MAX_RESULTS = 5;
+    const MAX_SUGGESTIONS = 3;
+
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Article::class);
     }
 
-    // /**
-    //  * @return Article[] Returns an array of Article objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Récupérer les articles du spotlight
+     */
+    public function findBySpotlight()
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
+            ->where('a.spotlight = 1')
+            ->orderBy('a.id', 'DESC')
+            ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Article
+    /**
+     * Récupérer les articles en avant.
+     */
+    public function findBySpecial()
     {
         return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
+            ->where('a.special = 1')
+            ->orderBy('a.id', 'DESC')
+            ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
-    */
+
+    /**
+     * Récupérer les derniers articles
+     */
+    public function findLatestArticles()
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.id', 'DESC')
+            ->setMaxResults(self::MAX_RESULTS)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * Récupérer les suggestions d'articles
+     * @param $idArticle
+     * @param $idCategorie
+     * @return Article[]
+     */
+    public function findArticlesSuggestions($idArticle, $idCategorie)
+    {
+        return $this->createQueryBuilder('a')
+            # Tous les articles d'une catégorie ($idCategorie)
+            ->where('a.categorie = :categorie_id')
+            ->setParameter('categorie_id', $idCategorie)
+
+            # Sauf un Article ($idArticle)
+            ->andWhere('a.id != :article_id')
+            ->setParameter('article_id', $idArticle)
+
+            # 3 articles MAX
+            ->setMaxResults(self::MAX_SUGGESTIONS)
+
+            # par ordre décroissant
+            ->orderBy('a.id', 'DESC')
+
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

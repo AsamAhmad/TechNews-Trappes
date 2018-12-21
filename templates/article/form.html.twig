@@ -1,0 +1,16 @@
+{% extends "layout.html.twig" %}
+
+{% block page_title %}
+    Rédiger un Article
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 col-sm-12">
+            <h3>Rédiger un Article</h3>
+            {{ form(form) }}
+        </div>
+        {{ render(controller('App\\Controller\\TechNews\\FrontController::sidebar')) }}
+    </div>
+{% endblock %}
+

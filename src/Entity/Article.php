@@ -180,4 +180,22 @@ class Article
         $this->categorie = $categorie;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getMembre()
+    {
+        return $this->membre;
+    }
+
+    /**
+     * @param mixed $membre
+     * @return Article
+     */
+    public function setMembre($membre)
+    {
+        $this->membre = $membre;
+        return $this;
+    }
 }
