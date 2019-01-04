@@ -43,7 +43,7 @@ class FrontController extends AbstractController
     /**
      * Page permettant d'afficher les articles
      * d'une catégorie
-     * @Route("/{slug<[a-zA-Z1-9\-_\/]+>}",
+     * @Route("/{slug<[a-zA-Z0-9\-_\/]+>}",
      *     methods={"GET"}, name="front_categorie")
      * @param $slug
      * @param Categorie|null $categorie
@@ -79,7 +79,7 @@ class FrontController extends AbstractController
     }
 
     /**
-     * @Route("/{categorie<[a-zA-Z1-9\-_\/]+>}/{slug<[a-zA-Z1-9\-_\/]+>}_{id<\d+>}.html",
+     * @Route("/{categorie<[a-zA-Z0-9\-_\/]+>}/{slug<[a-zA-Z0-9\-_\/]+>}_{id<\d+>}.html",
      *     name="front_article")
      * @param Article $article
      * @return Response

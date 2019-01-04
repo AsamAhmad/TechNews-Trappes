@@ -2,21 +2,24 @@
 
 namespace App\Controller\TechNews;
 
+use App\Controller\HelperTrait;
 use App\Entity\Article;
 use App\Entity\Categorie;
 use App\Entity\Membre;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Form\ArticleFormType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
+
+    use HelperTrait;
+
     /**
      * Démonstration de l'ajout d'un Article
      * avec Doctrine !
@@ -74,64 +77,69 @@ class ArticleController extends AbstractController
      * Formulaire pour ajouter un Article
      * @Route("/creer-un-article",
      *  name="article_new")
+     * @Security("has_role('ROLE_AUTEUR')")
      */
-    public function newArticle()
+    public function newArticle(Request $request)
     {
         # Récupération d'un Membre
-        $membre = $this->getDoctrine()
-            ->getRepository(Membre::class)
-            ->find(1);
+        #$membre = $this->getDoctrine()
+        #    ->getRepository(Membre::class)
+        #    ->find(1);
 
         # Création d'un Nouvel Article
         $article = new Article();
-        $article->setMembre($membre)
-            ->setTitre('Momo est fatigué');
+        $article->setMembre($this->getUser());
 
         # Création du Formulaire
-        $form = $this->createFormBuilder($article)
-            ->add('titre', TextType::class, [
-                'required' => true,
-                'label' => "Titre de l'Article",
-                'attr' => [
-                    'placeholder' => "Titre de l'Article"
-                ]
-            ])
-            ->add('categorie', EntityType::class, [
-                'class' => Categorie::class,
-                'choice_label' => 'nom',
-                'expanded' => false,
-                'multiple' => false,
-                'label' => false
-            ])
-            ->add('contenu', TextareaType::class, [
-                'label' => false
-            ])
-            ->add('featuredImage', FileType::class, [
-                'attr' => [
-                    'class' => 'dropify'
-                ]
-            ])
-            ->add('special', CheckboxType::class, [
-                'required' => false,
-                'attr' => [
-                    'data-toggle' => 'toggle',
-                    'data-on' => 'Oui',
-                    'data-off' => 'Non'
-                ]
-            ])
-            ->add('spotlight', CheckboxType::class, [
-                'required' => false,
-                'attr' => [
-                    'data-toggle' => 'toggle',
-                    'data-on' => 'Oui',
-                    'data-off' => 'Non'
-                ]
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'Publier mon Article'
-            ])
-            ->getForm()
-        ;
+        $form = $this->createForm(ArticleFormType::class, $article)
+            ->handleRequest($request);
+
+        # Traitement des données POST
+        #$form->handleRequest($request);
+
+        # Si le formulaire est soumis et valide
+        if($form->isSubmitted() && $form->isValid()) {
+
+            # dump($article);
+            # 1. Traitement de l'upload de l'image
+
+            /** @var UploadedFile $featuredImage */
+            $featuredImage = $article->getFeaturedImage();
+
+            $fileName = $this->slugify($article->getTitre())
+                . '.' . $featuredImage->guessExtension();
+
+            try {
+                $featuredImage->move(
+                    $this->getParameter('articles_assets_dir'),
+                    $fileName
+                );
+            } catch (FileException $e) {
+
+            }
+
+            # Mise à jour de l'image
+            $article->setFeaturedImage($fileName);
+
+            # Mise à jour du Slug
+            $article->setSlug($this->slugify($article->getTitre()));
+
+            # Sauvegarde en BDD
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($article);
+            $em->flush();
+
+            # Notification
+            $this->addFlash('notice',
+                'Félicitations, votre article est en ligne !');
+
+            # Redirection
+            return $this->redirectToRoute('front_article', [
+                'categorie' => $article->getCategorie()->getSlug(),
+                'slug' => $article->getSlug(),
+                'id' => $article->getId()
+            ]);
+        }
 
         # Affichage dans la vue
         return $this->render('article/form.html.twig', [

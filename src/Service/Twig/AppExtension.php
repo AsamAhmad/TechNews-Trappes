@@ -30,7 +30,7 @@ class AppExtension extends AbstractExtension
 
                 return $string;
 
-            })
+            },['is_safe' => ['html']])
         ];
     }
 

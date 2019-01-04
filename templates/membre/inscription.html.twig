@@ -1,0 +1,15 @@
+{% extends "layout.html.twig" %}
+
+{% block page_title %}
+    Inscription
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 col-sm-12">
+            <h3>Inscription</h3>
+            {{ form(form, {attr:{novalidate: 'novalidate' }}) }}
+        </div>
+        {{ render(controller('App\\Controller\\TechNews\\FrontController::sidebar')) }}
+    </div>
+{% endblock %}
